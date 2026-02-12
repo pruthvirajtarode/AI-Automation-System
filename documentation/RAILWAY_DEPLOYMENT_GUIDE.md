@@ -16,7 +16,7 @@ Follow these steps to deploy your **Digital Dada AI Operations Agent™** to Rai
    - Go to the **Settings** tab of this new service.
    - Set **Service Name** to `digital-dada-backend`.
    - Set **Root Directory** to `backend`.
-   - Railway will automatically detect the `requirements.txt` and `main:app`.
+   - **CRITICAL**: Scroll down to the **Build** section and change **Builder** from `Nixpacks` to `Docker`. This ensures Railway uses our `Dockerfile` which has Python and `pip` pre-installed.
 4. **Environment Variables**:
    - Go to the **Variables** tab.
    - Click **New Variable** -> **Reference Variable**.
