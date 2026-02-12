@@ -1,12 +1,15 @@
+version: 1
 services:
   - type: web
-    name: dada-backend
+    name: digital-dada-api-v1
     env: python
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
 
   - type: web
-    name: dada-frontend
+    name: digital-dada-web-v1
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    publishDir: frontend/build
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: build
