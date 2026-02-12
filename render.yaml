@@ -1,17 +1,12 @@
 services:
   - type: web
-    name: dada-api
-    env: docker
-    dockerContext: backend
-    envVars:
-      - key: APP_NAME
-        value: "Digital Dada"
-      - key: OPENAI_API_KEY
-        value: replace_me
+    name: dada-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
 
   - type: web
-    name: dada-web
+    name: dada-frontend
     env: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    publishDir: build
+    buildCommand: cd frontend && npm install && npm run build
+    publishDir: frontend/build
