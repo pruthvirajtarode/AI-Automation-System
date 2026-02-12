@@ -1,27 +1,17 @@
 services:
   - type: web
-    name: digital-dada-backend
+    name: dada-api
     env: docker
-    plan: free
-    rootDir: backend
+    dockerContext: backend
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: digital-dada-db
-          property: connectionString
+      - key: APP_NAME
+        value: "Digital Dada"
       - key: OPENAI_API_KEY
         value: replace_me
-      - key: APP_NAME
-        value: "Digital Dada AI Operations Agent"
 
   - type: web
-    name: digital-dada-frontend
+    name: dada-web
     env: static
-    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     publishDir: build
-
-databases:
-  - name: digital-dada-db
-    plan: free
