@@ -6,6 +6,13 @@ services:
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: digital-dada-db
+          property: connectionString
+      - key: APP_NAME
+        value: "Digital Dada"
 
   - type: web
     name: digital-dada-web-v1
@@ -13,3 +20,7 @@ services:
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishDir: build
+
+databases:
+  - name: digital-dada-db
+    plan: free
