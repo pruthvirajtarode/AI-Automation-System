@@ -1,18 +1,18 @@
 services:
-  # 🧠 Digital Dada Backend (Python FastAPI)
   - type: web
     name: digital-dada-backend
     env: python
+    plan: free
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: digital-dada-db
           property: connectionString
       - key: OPENAI_API_KEY
-        sync: false # Set this in the Render Dashboard
+        value: dummy_value_replace_me
       - key: AI_SMART_MODEL
         value: gpt-4
       - key: AI_CHEAP_MODEL
@@ -20,13 +20,13 @@ services:
       - key: APP_NAME
         value: "Digital Dada AI Operations Agent"
 
-  # 💻 Digital Dada Frontend (React)
   - type: web
     name: digital-dada-frontend
     env: static
+    plan: free
+    rootDir: frontend
     buildCommand: npm install && npm run build
     publishDir: build
-    rootDir: frontend
     envVars:
       - key: REACT_APP_API_URL
         fromService:
@@ -34,7 +34,6 @@ services:
           name: digital-dada-backend
           property: url
 
-# 🗄️ Managed PostgreSQL Database
 databases:
   - name: digital-dada-db
-    plan: free # Can be upgraded to 'starter' for production
+    plan: free
