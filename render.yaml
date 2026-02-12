@@ -1,34 +1,27 @@
 services:
-  # 🧠 Digital Dada Backend (Faster/More stable via Docker)
   - type: web
     name: digital-dada-backend
     env: docker
     plan: free
-    dockercontext: ./backend
-    dockerfilePath: ./backend/Dockerfile
+    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: digital-dada-db
           property: connectionString
       - key: OPENAI_API_KEY
-        value: replace_this_in_dashboard
-      - key: AI_SMART_MODEL
-        value: gpt-4
-      - key: AI_CHEAP_MODEL
-        value: gpt-3.5-turbo
+        value: replace_me
       - key: APP_NAME
         value: "Digital Dada AI Operations Agent"
 
-  # 💻 Digital Dada Frontend
   - type: web
     name: digital-dada-frontend
     env: static
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
-    publishDir: frontend/build
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: build
 
-# 🗄️ Managed PostgreSQL Database
 databases:
   - name: digital-dada-db
     plan: free

@@ -1,6 +1,4 @@
-"""
-Docker Configuration for Backend
-"""
+# Docker Configuration for Backend
 
 FROM python:3.11-slim
 
