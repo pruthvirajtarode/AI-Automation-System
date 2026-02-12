@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database via AWS RDS
+  # (Handled externally in AWS RDS - no container needed)
+  
+  # MongoDB via AWS DocumentDB
+  # (Handled externally in AWS DocumentDB - no container needed)
+  
+  # Redis via AWS ElastiCache
+  # (Handled externally in AWS ElastiCache - no container needed)
+  
+  # Backend API
+  backend:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ai-automation-backend:latest
+    container_name: ai_automation_api
+    environment:
+      # Database URLs (AWS Managed Services)
+      DATABASE_URL: postgresql://${RDS_USER}:${RDS_PASSWORD}@${RDS_ENDPOINT}:5432/ai_automation
+      MONGODB_URL: mongodb://${DOCUMENTDB_USER}:${DOCUMENTDB_PASSWORD}@${DOCUMENTDB_ENDPOINT}:27017/?ssl=true&replicaSet=rs0
+      REDIS_URL: redis://:${ELASTICACHE_PASSWORD}@${ELASTICACHE_ENDPOINT}:6379/0
+      
+      # AWS Configuration
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      
+      # API Keys
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      
+      # Application Settings
+      DEPLOYMENT_ENV: aws
+      DEBUG: "false"
+    
+    ports:
+      - "8000:8000"
+    
+    # Health check for ECS
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits for Fargate
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '0.512'
+          memory: 1G
+    
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: /ecs/ai-automation-backend
+        awslogs-region: ${AWS_REGION}
+        awslogs-stream-prefix: ecs
+    
+    depends_on:
+      - backend-migrations
+
+  # Database migrations service
+  backend-migrations:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ai-automation-backend:latest
+    environment:
+      DATABASE_URL: postgresql://${RDS_USER}:${RDS_PASSWORD}@${RDS_ENDPOINT}:5432/ai_automation
+      AWS_REGION: ${AWS_REGION}
+      DEPLOYMENT_ENV: aws
+    command: alembic upgrade head
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: /ecs/ai-automation-migrations
+        awslogs-region: ${AWS_REGION}
+        awslogs-stream-prefix: ecs
+
+  # Frontend
+  frontend:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ai-automation-frontend:latest
+    container_name: ai_automation_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: https://${API_DOMAIN}/api
+      REACT_APP_ENV: production
+    
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: /ecs/ai-automation-frontend
+        awslogs-region: ${AWS_REGION}
+        awslogs-stream-prefix: ecs
+    
+    depends_on:
+      - backend
+
+# No volumes needed - using AWS managed services
