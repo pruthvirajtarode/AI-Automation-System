@@ -8,11 +8,11 @@ WORKDIR /app
 # If you need specific C-extensions, uncomment below, but it may hit RAM limits.
 # RUN apt-get update && apt-get install -y gcc postgresql-client && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Copy only requirements first to cache this layer
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy the rest of the application
 COPY . .
 
 # Expose port
