@@ -1,18 +1,18 @@
 services:
+  # 🧠 Digital Dada Backend (Faster/More stable via Docker)
   - type: web
     name: digital-dada-backend
-    env: python
+    env: docker
     plan: free
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    dockercontext: ./backend
+    dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: digital-dada-db
           property: connectionString
       - key: OPENAI_API_KEY
-        value: dummy_value_replace_me
+        value: replace_this_in_dashboard
       - key: AI_SMART_MODEL
         value: gpt-4
       - key: AI_CHEAP_MODEL
@@ -20,20 +20,15 @@ services:
       - key: APP_NAME
         value: "Digital Dada AI Operations Agent"
 
+  # 💻 Digital Dada Frontend
   - type: web
     name: digital-dada-frontend
     env: static
     plan: free
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    publishDir: build
-    envVars:
-      - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: digital-dada-backend
-          property: url
+    buildCommand: cd frontend && npm install && npm run build
+    publishDir: frontend/build
 
+# 🗄️ Managed PostgreSQL Database
 databases:
   - name: digital-dada-db
     plan: free
