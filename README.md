@@ -79,6 +79,7 @@ Ready to explore? Jump into the documentation:
 
 *   **[🚀 Digital Dada SaaS Blueprint](./documentation/DIGITAL_DADA_SAAS_BLUEPRINT.md)**: The $99/mo business model & technical strategy.
 *   **[🌐 Render Deployment Guide](./documentation/RENDER_DEPLOYMENT_GUIDE.md)**: Get your demo live in 10 minutes.
+*   **[🚂 Railway Deployment Guide](./documentation/RAILWAY_DEPLOYMENT_GUIDE.md)**: Faster, robust deployment alternative.
 *   **[🏗️ System Architecture](./documentation/ARCHITECTURE.md)**: Deep dive into the backend and service layers.
 
 ---
