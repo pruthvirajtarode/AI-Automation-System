@@ -1,7 +1,7 @@
 version: 1
 services:
   - type: web
-    name: digital-dada-api-v1
+    name: digital-dada-backend
     env: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt
@@ -13,13 +13,15 @@ services:
           property: connectionString
       - key: APP_NAME
         value: "Digital Dada"
+      - key: CORS_ORIGINS
+        value: '["*"]'
 
   - type: web
-    name: digital-dada-web-v1
+    name: digital-dada-frontend
     env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishDir: build
+    publishDir: build
 
 databases:
   - name: digital-dada-db
