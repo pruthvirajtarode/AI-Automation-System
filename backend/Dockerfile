@@ -19,5 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 
 # Run application
-# We use the string form so the shell expands $PORT correctly
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+# We run main.py directly; Pydantic Settings will automatically
+# pick up the dynamic PORT variable from the environment.
+CMD ["python", "main.py"]
