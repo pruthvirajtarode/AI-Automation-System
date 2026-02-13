@@ -96,6 +96,15 @@ function App() {
             <span className="mr-3 group-hover:rotate-12 transition-transform">🔑</span>
             Login Again
           </button>
+
+          <div className="mt-12 pt-8 border-t border-slate-100/50">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">
+              Digital Dada Agent™ Subsystem
+            </p>
+            <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">
+              © {new Date().getFullYear()} Digital Dada. All Rights Reserved.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -104,9 +113,9 @@ function App() {
   // Logged in - show dashboard
   return (
     <Router>
-      <div className="app">
+      <div className="app flex flex-col min-h-screen">
         <Navigation user={user} onLogout={handleLogout} />
-        <div className="main-content">
+        <div className="main-content flex-grow">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/leads" element={<LeadsPage />} />
@@ -117,6 +126,25 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
+        <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-slate-100 bg-white">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <img src="/logo.jpeg" alt="Logo" className="w-5 h-5 grayscale opacity-50" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                © {new Date().getFullYear()} Digital Dada Agent™. All Rights Reserved.
+              </p>
+            </div>
+            <div className="flex items-center gap-6">
+              <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
+                System v1.0.4-PRO
+              </span>
+              <div className="flex gap-4">
+                <a href="#" className="text-[10px] font-black text-slate-400 hover:text-cyan-500 transition-colors uppercase tracking-widest">Privacy Protocol</a>
+                <a href="#" className="text-[10px] font-black text-slate-400 hover:text-cyan-500 transition-colors uppercase tracking-widest">Service Terms</a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </Router>
   );

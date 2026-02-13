@@ -202,11 +202,15 @@ function LoginPage({ onLogin }) {
         </div>
 
         {/* Footer */}
-        <div className="text-center">
-          <p className="text-gray-300 text-sm font-medium">
-            🌟 AI-Powered Lead Management & Automation System
+        <div className="text-center mt-12">
+          <p className="text-slate-400 text-xs font-black uppercase tracking-[0.2em] mb-3">
+            Digital Dada Agent™ Subsystem
           </p>
-          <p className="text-gray-500 text-xs mt-3">© 2026 AI Automation. All rights reserved.</p>
+          <div className="flex items-center justify-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+            <span>© {new Date().getFullYear()} Digital Dada</span>
+            <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
+            <span>All Rights Reserved</span>
+          </div>
         </div>
       </div>
 
