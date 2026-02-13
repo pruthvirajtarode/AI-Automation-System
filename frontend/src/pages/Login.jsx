@@ -58,27 +58,12 @@ function LoginPage({ onLogin }) {
       <div className="w-full max-w-md relative z-10">
         {/* Logo & Title */}
         <div className="text-center mb-12">
-          <div className="inline-block mb-8 p-6 bg-white rounded-[2.5rem] shadow-2xl shadow-cyan-500/10 transform hover:rotate-3 transition-transform duration-500">
-            <svg
-              width="60"
-              height="60"
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 20H55C71.5685 20 85 33.4315 85 50C85 66.5685 71.5685 80 55 80H20V20Z"
-                stroke="black"
-                strokeWidth="12"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M42 38H55C61.6274 38 67 43.3726 67 50C67 56.6274 61.6274 62 55 62H42V38Z"
-                stroke="black"
-                strokeWidth="8"
-                strokeLinejoin="round"
-              />
-            </svg>
+          <div className="inline-block mb-8 p-4 bg-white rounded-[2rem] shadow-2xl shadow-cyan-500/10 transform hover:rotate-3 transition-transform duration-500">
+            <img
+              src="/logo.jpeg"
+              alt="Digital Dada Logo"
+              className="w-16 h-16 object-contain"
+            />
           </div>
           <div className="flex flex-col items-center">
             <div className="flex items-baseline mb-2">

@@ -37,85 +37,68 @@ function Navigation({ user, onLogout }) {
     <nav className="sticky top-4 sm:top-6 z-[100] mx-auto max-w-7xl px-4 sm:px-6">
       <div className="glass-panel rounded-3xl sm:rounded-[2.5rem] px-4 sm:px-8 py-3 sm:py-4 flex justify-between items-center premium-shadow border-slate-200/50">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-4 group shrink-0" onClick={() => setIsMenuOpen(false)}>
-          {/* Stylized D Logo SVG */}
-          <div className="flex items-center gap-3">
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 100 100"
-              className="transform group-hover:scale-110 transition-transform duration-500 drop-shadow-sm"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M20 20H55C71.5685 20 85 33.4315 85 50C85 66.5685 71.5685 80 55 80H20V20Z"
-                stroke="black"
-                strokeWidth="12"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M42 38H55C61.6274 38 67 43.3726 67 50C67 56.6274 61.6274 62 55 62H42V38Z"
-                stroke="black"
-                strokeWidth="8"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div className="flex flex-col">
-              <div className="flex items-baseline">
-                <span className="text-xl font-light text-slate-400 tracking-[0.1em] uppercase">Digital</span>
-                <span className="text-xl font-black text-slate-900 tracking-[0.05em] uppercase ml-1.5">Dada</span>
-              </div>
-              <span className="text-[10px] font-black text-cyan-600 uppercase tracking-[0.3em] mt-0.5 opacity-80">
-                AI Operations Agent™
-              </span>
+        <Link to="/" className="flex items-center gap-3 sm:gap-4 group shrink-0" onClick={() => setIsMenuOpen(false)}>
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+            <img
+              src="/logo.jpeg"
+              alt="Digital Dada Logo"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-contain relative bg-white p-1 border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-110"
+            />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-baseline">
+              <span className="text-base sm:text-lg font-light text-slate-400 tracking-[0.1em] uppercase hidden xs:block">Digital</span>
+              <span className="text-base sm:text-lg font-black text-slate-900 tracking-[0.05em] uppercase xs:ml-1.5">Dada</span>
             </div>
+            <span className="text-[8px] sm:text-[10px] font-black text-cyan-600 uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-0.5 opacity-80">
+              AI Operations Agent™
+            </span>
           </div>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-2 bg-slate-100/50 p-2 rounded-[2rem] border border-slate-200/30">
+        <div className="hidden lg:flex items-center gap-1 xl:gap-2 bg-slate-100/50 p-1.5 rounded-[2rem] border border-slate-200/30">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`px-6 py-3 rounded-2xl transition-all duration-300 font-black text-xs uppercase tracking-widest flex items-center gap-3 group ${isActive(item.path)
-                ? 'bg-white text-slate-900 shadow-xl shadow-slate-200/50 scale-105'
+              className={`px-3 xl:px-5 py-2.5 rounded-2xl transition-all duration-300 font-black text-[10px] xl:text-xs uppercase tracking-widest flex items-center gap-2 xl:gap-3 group ${isActive(item.path)
+                ? 'bg-white text-slate-900 shadow-lg shadow-slate-200/50 scale-105'
                 : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
                 }`}
             >
-              <div className={`p-1.5 rounded-lg transition-transform group-hover:scale-110 duration-300 ${isActive(item.path) ? 'bg-slate-50' : ''}`}>
-                <item.icon className={`text-xl ${isActive(item.path) ? item.color : 'text-slate-400'}`} style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' }} />
+              <div className={`p-1 rounded-lg transition-transform group-hover:scale-110 duration-300 ${isActive(item.path) ? 'bg-slate-50' : ''}`}>
+                <item.icon className={`text-lg ${isActive(item.path) ? item.color : 'text-slate-400'}`} />
               </div>
-              {item.label}
+              <span className="hidden xl:inline">{item.label}</span>
+              <span className="xl:hidden">{item.label.substring(0, 3)}</span>
             </Link>
           ))}
         </div>
 
         {/* User Actions & Mobile Toggle */}
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div className="hidden md:flex items-center gap-2 bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200/30">
-            <div className="flex items-center gap-3 pl-4 pr-2">
-              <div className="text-right hidden xl:block">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Session Active</p>
-                <p className="text-xs font-black text-slate-800 tracking-tight">{user?.name || 'Administrator'}</p>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden sm:flex items-center gap-2 bg-slate-100/50 p-1 rounded-2xl border border-slate-200/30">
+            <div className="flex items-center gap-2 pl-3 pr-1">
+              <div className="text-right hidden lg:block xl:block">
+                <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.1em] leading-none mb-0.5">Active</p>
+                <p className="text-[11px] font-black text-slate-800 tracking-tight whitespace-nowrap">{user?.name || 'Admin'}</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-950 rounded-xl flex items-center justify-center shadow-lg border border-white/20 relative group cursor-pointer hover:scale-105 transition-transform duration-300">
-                <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center shadow-md border border-white/20 relative group cursor-pointer hover:scale-105 transition-transform duration-300">
                 <span className="text-white font-black text-xs z-10">
                   {user?.name?.charAt(0) || 'A'}
                 </span>
-                {/* Active Pulse */}
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
               </div>
             </div>
 
             <button
-              className="w-10 h-10 bg-white hover:bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md border border-slate-200/50 group"
+              className="w-9 h-9 bg-white hover:bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-95 border border-slate-200/50 group"
               onClick={handleLogout}
-              title="Terminate Session"
+              title="Logout"
             >
-              <HiPower className="text-lg group-hover:scale-110 group-hover:rotate-12 transition-all" />
+              <HiPower className="text-base group-hover:scale-110 transition-all" />
             </button>
           </div>
 
