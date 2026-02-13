@@ -35,11 +35,11 @@ function LoginPage({ onLogin }) {
           name: ADMIN_CREDENTIALS.name,
           role: ADMIN_CREDENTIALS.role,
         };
-        
+
         // Store in localStorage for persistence
         localStorage.setItem('authToken', 'demo-token-' + Date.now());
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         onLogin(user);
         setLoading(false);
       } else {
@@ -92,11 +92,11 @@ function LoginPage({ onLogin }) {
             <form onSubmit={handleLogin} className="space-y-6">
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-3 uppercase tracking-widest">
+                <label className="block text-sm font-black text-gray-800 mb-3 uppercase tracking-[0.2em] ml-1">
                   📧 Email Address
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
                   <input
                     type="email"
                     value={email}
@@ -104,7 +104,7 @@ function LoginPage({ onLogin }) {
                       setEmail(e.target.value);
                       setError('');
                     }}
-                    className="relative w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 text-lg font-medium placeholder-gray-400 hover:border-cyan-300"
+                    className="relative w-full px-6 py-4 bg-white/50 backdrop-blur-sm border-2 border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all duration-300 text-lg font-medium placeholder-gray-400 hover:border-slate-200"
                     placeholder="your@email.com"
                     disabled={loading}
                   />
@@ -113,11 +113,11 @@ function LoginPage({ onLogin }) {
 
               {/* Password Field */}
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-3 uppercase tracking-widest">
+                <label className="block text-sm font-black text-gray-800 mb-3 uppercase tracking-[0.2em] ml-1">
                   🔐 Password
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
                   <div className="relative flex items-center">
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -126,14 +126,14 @@ function LoginPage({ onLogin }) {
                         setPassword(e.target.value);
                         setError('');
                       }}
-                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 text-lg font-medium placeholder-gray-400 hover:border-cyan-300"
+                      className="w-full px-6 py-4 bg-white/50 backdrop-blur-sm border-2 border-slate-100 rounded-2xl focus:outline-none focus:bg-white focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all duration-300 text-lg font-medium placeholder-gray-400 hover:border-slate-200"
                       placeholder="••••••••••"
                       disabled={loading}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 text-2xl cursor-pointer hover:scale-125 transition-transform"
+                      className="absolute right-4 p-2 text-slate-400 hover:text-cyan-500 transition-colors"
                     >
                       {showPassword ? '👁️' : '👁️‍🗨️'}
                     </button>
@@ -145,17 +145,23 @@ function LoginPage({ onLogin }) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-8 py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold text-lg rounded-2xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:scale-100 flex items-center justify-center gap-3"
+                className="group relative w-full mt-8 py-5 px-6 bg-slate-950 text-white font-black text-lg rounded-2xl transition-all duration-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl hover:shadow-cyan-500/20 transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 overflow-hidden"
               >
+                {/* Button Glow Effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+                {/* Shimmer Animation */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-3 border-white border-t-transparent"></div>
-                    <span>Signing in...</span>
+                    <span className="tracking-widest uppercase">Verifying...</span>
                   </>
                 ) : (
                   <>
-                    <span>🔑</span>
-                    <span>Login to Dashboard</span>
+                    <span className="text-xl group-hover:rotate-12 transition-transform duration-300">🔑</span>
+                    <span className="tracking-widest uppercase">Secure Login</span>
                   </>
                 )}
               </button>

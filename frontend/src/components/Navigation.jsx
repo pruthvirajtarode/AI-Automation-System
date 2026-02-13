@@ -69,26 +69,30 @@ function Navigation({ user, onLogout }) {
 
         {/* User Actions & Mobile Toggle */}
         <div className="flex items-center gap-4 sm:gap-6">
-          <div className="hidden md:flex items-center gap-4 pl-6 border-l border-slate-200">
-            <div className="text-right">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Session Active</p>
-              <p className="text-sm font-black text-slate-800 tracking-tight">{user?.name || 'Administrator'}</p>
+          <div className="hidden md:flex items-center gap-2 bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200/30">
+            <div className="flex items-center gap-3 pl-4 pr-2">
+              <div className="text-right hidden xl:block">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] leading-none mb-1">Session Active</p>
+                <p className="text-xs font-black text-slate-800 tracking-tight">{user?.name || 'Administrator'}</p>
+              </div>
+              <div className="w-10 h-10 bg-gradient-to-br from-slate-800 to-slate-950 rounded-xl flex items-center justify-center shadow-lg border border-white/20 relative group cursor-pointer hover:scale-105 transition-transform duration-300">
+                <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span className="text-white font-black text-xs z-10">
+                  {user?.name?.charAt(0) || 'A'}
+                </span>
+                {/* Active Pulse */}
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
+              </div>
             </div>
-            <div className="w-11 h-11 bg-gradient-to-br from-slate-800 to-slate-950 rounded-2xl flex items-center justify-center shadow-xl border-2 border-white relative group cursor-pointer hover:scale-105 transition-transform duration-300">
-              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <span className="text-white font-black text-sm z-10">
-                {user?.name?.charAt(0) || 'A'}
-              </span>
-            </div>
-          </div>
 
-          <button
-            className="hidden md:flex w-11 h-11 bg-white hover:bg-rose-50 text-rose-500 rounded-2xl items-center justify-center transition-all duration-300 active:scale-90 shadow-lg border border-slate-100 group"
-            onClick={handleLogout}
-            title="Terminate Session"
-          >
-            <HiPower className="text-xl group-hover:scale-110 transition-transform" />
-          </button>
+            <button
+              className="w-10 h-10 bg-white hover:bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md border border-slate-200/50 group"
+              onClick={handleLogout}
+              title="Terminate Session"
+            >
+              <HiPower className="text-lg group-hover:scale-110 group-hover:rotate-12 transition-all" />
+            </button>
+          </div>
 
           {/* Mobile Menu Toggle */}
           <button

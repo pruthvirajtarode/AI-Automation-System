@@ -29,7 +29,7 @@ function App() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const authToken = localStorage.getItem('authToken');
-    
+
     if (storedUser && authToken) {
       try {
         setUser(JSON.parse(storedUser));
@@ -40,7 +40,7 @@ function App() {
         localStorage.removeItem('authToken');
       }
     }
-    
+
     setLoading(false);
   }, []);
 
@@ -76,17 +76,24 @@ function App() {
   // If logged out, show logout screen
   if (isLoggedIn === false && user === null) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-r from-slate-800 to-slate-900">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">🤖 AI Automation</h1>
-          <p className="text-gray-300 mb-8">You have been logged out successfully</p>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 p-6">
+        <div className="max-w-md w-full glass-panel rounded-[3rem] p-12 text-center premium-shadow">
+          <div className="w-24 h-24 bg-slate-900 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 to-transparent"></div>
+            <span className="text-5xl group-hover:scale-110 transition-transform duration-500">🤖</span>
+          </div>
+          <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">Session Ended</h1>
+          <p className="text-slate-500 mb-10 text-lg font-medium leading-relaxed">
+            You've been successfully logged out of the Digital Dada Agent™.
+          </p>
           <button
             onClick={() => {
               setIsLoggedIn(true);
               setUser({ name: 'Admin User', email: 'admin@techsales.com', role: 'Administrator' });
             }}
-            className="bg-cyan-500 hover:bg-cyan-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200"
+            className="w-full btn-premium btn-premium-cyan group"
           >
+            <span className="mr-3 group-hover:rotate-12 transition-transform">🔑</span>
             Login Again
           </button>
         </div>

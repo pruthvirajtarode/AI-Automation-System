@@ -1,0 +1,12 @@
+# Railway Configuration File for Frontend
+# This file forces Railway to use the Dockerfile for the frontend
+
+[build]
+builder = "docker"
+dockerfilePath = "Dockerfile"
+context = "."
+
+[deploy]
+healthcheckPath = "/"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
