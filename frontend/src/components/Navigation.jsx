@@ -34,99 +34,88 @@ function Navigation({ user, onLogout }) {
   };
 
   return (
-    <nav className="sticky top-2 sm:top-6 z-[100] mx-auto max-w-7xl px-2 sm:px-6">
-      <div className="glass-panel rounded-2xl sm:rounded-[2.5rem] px-3 sm:px-8 py-2 sm:py-4 flex justify-between items-center premium-shadow border-slate-200/50">
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-2 sm:gap-4 group shrink-0" onClick={() => setIsMenuOpen(false)}>
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
-            <img
-              src="/logo.jpeg"
-              alt="Digital Dada Logo"
-              className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl object-contain relative bg-white p-1 border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-110"
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-baseline leading-none sm:leading-tight">
-              <span className="text-sm sm:text-lg font-light text-slate-400 tracking-[0.1em] uppercase block">Digital</span>
-              <span className="text-sm sm:text-lg font-black text-slate-900 tracking-[0.05em] uppercase ml-1 sm:ml-1.5">Dada</span>
+    <header className="sticky top-0 z-[100] w-full bg-white border-b border-slate-100 shadow-sm transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 sm:h-20">
+          {/* Brand */}
+          <Link to="/" className="flex items-center gap-3 group shrink-0" onClick={() => setIsMenuOpen(false)}>
+            <div className="relative">
+              <img
+                src="/logo.jpeg"
+                alt="Digital Dada Logo"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-contain bg-white transition-transform duration-500 group-hover:scale-110"
+              />
             </div>
-            <span className="text-[7px] sm:text-[10px] font-black text-cyan-600 uppercase tracking-[0.1em] sm:tracking-[0.3em] mt-0.5 opacity-80 whitespace-nowrap">
-              AI Operations Agent™
-            </span>
+            <div className="hidden xs:flex flex-col">
+              <div className="flex items-baseline leading-none">
+                <span className="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">Digital Dada</span>
+              </div>
+              <span className="text-[7px] sm:text-[9px] font-bold text-cyan-600 uppercase tracking-[0.1em] mt-0.5 opacity-80 whitespace-nowrap">
+                AI Operations Agent™
+              </span>
+            </div>
+          </Link>
+
+          {/* Desktop Nav Items */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2 h-full">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`h-full px-3 xl:px-4 flex flex-col items-center justify-center gap-1 border-b-2 transition-all duration-300 group ${isActive(item.path)
+                  ? 'border-cyan-500 text-slate-900'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-200'
+                  }`}
+              >
+                <item.icon className="text-xl transition-transform group-hover:scale-110" />
+                <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+              </Link>
+            ))}
           </div>
-        </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden lg:flex items-center gap-1 xl:gap-2 bg-slate-100/50 p-1.5 rounded-[2rem] border border-slate-200/30">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`px-3 xl:px-5 py-2.5 rounded-2xl transition-all duration-300 font-black text-[10px] xl:text-xs uppercase tracking-widest flex items-center gap-2 xl:gap-3 group ${isActive(item.path)
-                ? 'bg-white text-slate-900 shadow-lg shadow-slate-200/50 scale-105'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
-                }`}
-            >
-              <div className={`p-1 rounded-lg transition-transform group-hover:scale-110 duration-300 ${isActive(item.path) ? 'bg-slate-50' : ''}`}>
-                <item.icon className={`text-lg ${isActive(item.path) ? item.color : 'text-slate-400'}`} />
+          {/* User Actions & Mobile Toggle */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden sm:flex items-center gap-4">
+              <div className="text-right hidden xl:block border-r border-slate-100 pr-4">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Administrator</p>
+                <p className="text-xs font-black text-slate-800 tracking-tight">{user?.name || 'Admin User'}</p>
               </div>
-              <span className="hidden xl:inline">{item.label}</span>
-              <span className="xl:hidden">{item.label.substring(0, 3)}</span>
-            </Link>
-          ))}
-        </div>
 
-        {/* User Actions & Mobile Toggle */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          <div className="hidden sm:flex items-center gap-2 bg-slate-100/50 p-1 rounded-2xl border border-slate-200/30">
-            <div className="flex items-center gap-2 pl-3 pr-1">
-              <div className="text-right hidden lg:block xl:block">
-                <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.1em] leading-none mb-0.5">Active</p>
-                <p className="text-[11px] font-black text-slate-800 tracking-tight whitespace-nowrap">{user?.name || 'Admin'}</p>
-              </div>
-              <div className="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center shadow-md border border-white/20 relative group cursor-pointer hover:scale-105 transition-transform duration-300">
-                <span className="text-white font-black text-xs z-10">
-                  {user?.name?.charAt(0) || 'A'}
-                </span>
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white animate-pulse"></span>
-              </div>
+              <button
+                onClick={handleLogout}
+                className="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg shadow-slate-200"
+              >
+                <HiPower className="text-sm" />
+                <span>Logout</span>
+              </button>
             </div>
 
+            {/* Mobile Menu Toggle */}
             <button
-              className="w-9 h-9 bg-white hover:bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-95 border border-slate-200/50 group"
-              onClick={handleLogout}
-              title="Logout"
+              className="lg:hidden w-10 h-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center transition-all active:scale-90 border border-slate-100"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <HiPower className="text-base group-hover:scale-110 transition-all" />
+              {isMenuOpen ? <HiXMark className="text-2xl" /> : <HiBars3 className="text-2xl" />}
             </button>
           </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="lg:hidden w-10 h-10 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center transition-all active:scale-90"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <HiXMark className="text-2xl" /> : <HiBars3 className="text-2xl" />}
-          </button>
         </div>
       </div>
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-4 right-4 mt-4 glass-panel rounded-3xl p-4 shadow-2xl animate-modal-in border-slate-200/50">
-          <div className="flex flex-col gap-2">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-100 shadow-2xl animate-fade-in">
+          <div className="flex flex-col p-4 gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={() => setIsMenuOpen(false)}
                 className={`w-full p-4 rounded-xl transition-all font-black text-sm uppercase tracking-widest flex items-center gap-4 ${isActive(item.path)
-                  ? 'bg-slate-900 text-white'
-                  : 'text-slate-600 bg-slate-50 hover:bg-slate-100'
+                  ? 'bg-slate-900 text-white shadow-lg'
+                  : 'text-slate-600 hover:bg-slate-50'
                   }`}
               >
-                <div className={`p-1.5 rounded-lg ${isActive(item.path) ? 'bg-white/10' : 'bg-white shadow-sm'}`}>
+                <div className={`p-1.5 rounded-lg ${isActive(item.path) ? 'bg-white/10' : 'bg-slate-100'}`}>
                   <item.icon className={`text-xl ${isActive(item.path) ? 'text-white' : item.color}`} />
                 </div>
                 {item.label}
@@ -140,7 +129,7 @@ function Navigation({ user, onLogout }) {
                     {user?.name?.charAt(0) || 'A'}
                   </div>
                   <div>
-                    <p className="text-xs font-black text-slate-900">{user?.name || 'Administrator'}</p>
+                    <p className="text-sm font-black text-slate-900">{user?.name || 'Administrator'}</p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Session</p>
                   </div>
                 </div>
@@ -155,7 +144,7 @@ function Navigation({ user, onLogout }) {
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 }
 
