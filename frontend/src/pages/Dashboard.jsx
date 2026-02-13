@@ -113,7 +113,7 @@ function Dashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-12">
           {/* Card: Leads */}
           <div className="card-premium group hover-lift">
             <div className="flex justify-between items-start mb-4 sm:mb-6">

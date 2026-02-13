@@ -34,24 +34,24 @@ function Navigation({ user, onLogout }) {
   };
 
   return (
-    <nav className="sticky top-4 sm:top-6 z-[100] mx-auto max-w-7xl px-4 sm:px-6">
-      <div className="glass-panel rounded-3xl sm:rounded-[2.5rem] px-4 sm:px-8 py-3 sm:py-4 flex justify-between items-center premium-shadow border-slate-200/50">
+    <nav className="sticky top-2 sm:top-6 z-[100] mx-auto max-w-7xl px-2 sm:px-6">
+      <div className="glass-panel rounded-2xl sm:rounded-[2.5rem] px-3 sm:px-8 py-2 sm:py-4 flex justify-between items-center premium-shadow border-slate-200/50">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-3 sm:gap-4 group shrink-0" onClick={() => setIsMenuOpen(false)}>
+        <Link to="/" className="flex items-center gap-2 sm:gap-4 group shrink-0" onClick={() => setIsMenuOpen(false)}>
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
             <img
               src="/logo.jpeg"
               alt="Digital Dada Logo"
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl object-contain relative bg-white p-1 border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-110"
+              className="w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl object-contain relative bg-white p-1 border border-slate-100 shadow-sm transition-transform duration-500 group-hover:scale-110"
             />
           </div>
           <div className="flex flex-col">
-            <div className="flex items-baseline">
-              <span className="text-base sm:text-lg font-light text-slate-400 tracking-[0.1em] uppercase hidden xs:block">Digital</span>
-              <span className="text-base sm:text-lg font-black text-slate-900 tracking-[0.05em] uppercase xs:ml-1.5">Dada</span>
+            <div className="flex items-baseline leading-none sm:leading-tight">
+              <span className="text-sm sm:text-lg font-light text-slate-400 tracking-[0.1em] uppercase block">Digital</span>
+              <span className="text-sm sm:text-lg font-black text-slate-900 tracking-[0.05em] uppercase ml-1 sm:ml-1.5">Dada</span>
             </div>
-            <span className="text-[8px] sm:text-[10px] font-black text-cyan-600 uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-0.5 opacity-80">
+            <span className="text-[7px] sm:text-[10px] font-black text-cyan-600 uppercase tracking-[0.1em] sm:tracking-[0.3em] mt-0.5 opacity-80 whitespace-nowrap">
               AI Operations Agent™
             </span>
           </div>

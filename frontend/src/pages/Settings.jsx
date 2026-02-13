@@ -100,7 +100,7 @@ function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 sm:gap-3 px-4 sm:px-8 py-2.5 sm:py-3.5 rounded-xl sm:rounded-[1.5rem] font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === tab.id
+                className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-8 py-2.5 sm:py-3.5 rounded-xl sm:rounded-[1.5rem] font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all whitespace-nowrap ${activeTab === tab.id
                   ? 'bg-white text-slate-900 shadow-xl shadow-slate-200 scale-105'
                   : 'text-slate-500 hover:text-slate-900'
                   }`}
@@ -113,7 +113,7 @@ function SettingsPage() {
         </div>
 
         {/* Settings Content */}
-        <div className="card-premium p-10">
+        <div className="card-premium p-4 sm:p-10">
           {activeTab === 'general' && (
             <div className="space-y-10">
               <div className="border-b border-slate-100 pb-6">
