@@ -37,14 +37,39 @@ function Navigation({ user, onLogout }) {
     <nav className="sticky top-4 sm:top-6 z-[100] mx-auto max-w-7xl px-4 sm:px-6">
       <div className="glass-panel rounded-3xl sm:rounded-[2.5rem] px-4 sm:px-8 py-3 sm:py-4 flex justify-between items-center premium-shadow border-slate-200/50">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-3 group shrink-0" onClick={() => setIsMenuOpen(false)}>
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-2xl shadow-slate-900/20 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 to-transparent"></div>
-            <span className="text-xl sm:text-2xl z-10">🤖</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-none">Digital Dada</span>
-            <span className="text-[10px] font-black text-cyan-600 uppercase tracking-[0.2em] mt-1 hidden xs:block">AI Operations Agent™</span>
+        <Link to="/" className="flex items-center gap-4 group shrink-0" onClick={() => setIsMenuOpen(false)}>
+          {/* Stylized D Logo SVG */}
+          <div className="flex items-center gap-3">
+            <svg
+              width="44"
+              height="44"
+              viewBox="0 0 100 100"
+              className="transform group-hover:scale-110 transition-transform duration-500 drop-shadow-sm"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 20H55C71.5685 20 85 33.4315 85 50C85 66.5685 71.5685 80 55 80H20V20Z"
+                stroke="black"
+                strokeWidth="12"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M42 38H55C61.6274 38 67 43.3726 67 50C67 56.6274 61.6274 62 55 62H42V38Z"
+                stroke="black"
+                strokeWidth="8"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <div className="flex flex-col">
+              <div className="flex items-baseline">
+                <span className="text-xl font-light text-slate-400 tracking-[0.1em] uppercase">Digital</span>
+                <span className="text-xl font-black text-slate-900 tracking-[0.05em] uppercase ml-1.5">Dada</span>
+              </div>
+              <span className="text-[10px] font-black text-cyan-600 uppercase tracking-[0.3em] mt-0.5 opacity-80">
+                AI Operations Agent™
+              </span>
+            </div>
           </div>
         </Link>
 

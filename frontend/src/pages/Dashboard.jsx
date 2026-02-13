@@ -82,17 +82,32 @@ function Dashboard() {
     <div className="main-content animate-fade-in">
       <div className="page-container">
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <span className="bg-cyan-50 text-cyan-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4 inline-block border border-cyan-100">
-              Digital Dada Operations
-            </span>
-            <h1 className="page-title">AI Operations Agent™</h1>
-            <p className="page-subtitle">Your $99/mo Business Engine. Monitoring Lead Lifecycle and Team Performance.</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-16">
+          <div className="flex items-center gap-6">
+            <div className="hidden sm:block w-px h-16 bg-gradient-to-b from-transparent via-slate-200 to-transparent"></div>
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="bg-slate-900 text-white px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-[0.2em] shadow-lg">
+                  Main Hub
+                </span>
+                <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">
+                  System Status: Operational
+                </span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight mb-2">
+                Business Intelligence <span className="text-slate-400 font-light">Suite</span>
+              </h1>
+              <p className="text-slate-500 font-medium tracking-wide">
+                Unified monitoring for <span className="text-slate-900 font-bold">Digital Dada Agent™</span> ecosystems.
+              </p>
+            </div>
           </div>
           <div className="flex gap-4">
-            <button onClick={() => navigate('/leads?add=true')} className="btn-premium btn-premium-cyan">
-              + Create New Lead
+            <button
+              onClick={() => navigate('/leads?add=true')}
+              className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-xl active:scale-95"
+            >
+              + Create Lead
             </button>
           </div>
         </div>
