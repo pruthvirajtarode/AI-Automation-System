@@ -7,6 +7,9 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 
+# Force SQLite for local seeding (no PostgreSQL needed)
+os.environ.setdefault("DATABASE_URL", "sqlite:///./local_dev.db")
+
 from app.core.database import SessionLocal, init_db
 from app.models import Customer, Lead, Task, Booking
 from datetime import datetime, timedelta

@@ -13,9 +13,11 @@ function BookingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
+  const [leads, setLeads] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     customer: '',
+    leadId: '',
     date: '',
     time: '',
     duration: '30 min',
@@ -24,7 +26,19 @@ function BookingsPage() {
   const [formErrors, setFormErrors] = useState({});
   const validator = new FormValidator();
 
-  useEffect(() => { loadBookings(); }, []);
+  useEffect(() => {
+    loadBookings();
+    loadLeads();
+  }, []);
+
+  const loadLeads = async () => {
+    try {
+      const data = await api.listLeads();
+      setLeads(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Failed to load leads:', err);
+    }
+  };
 
   const loadBookings = async () => {
     try {
@@ -67,14 +81,17 @@ function BookingsPage() {
     }
 
     try {
+      const scheduledTime = new Date(`${formData.date}T${formData.time}`).toISOString();
       await api.createBooking({
         meeting_type: formData.title,
-        scheduled_time: `${formData.date}T${formData.time}`,
+        scheduled_time: scheduledTime,
         duration_minutes: parseInt(formData.duration) || 30,
         meeting_link: formData.meetingLink,
+        lead_id: formData.leadId || null,
+        customer_name: formData.customer,
       });
       await loadBookings();
-      setFormData({ title: '', customer: '', date: '', time: '', duration: '30 min', meetingLink: '' });
+      setFormData({ title: '', customer: '', leadId: '', date: '', time: '', duration: '30 min', meetingLink: '' });
       setShowModal(false);
     } catch (err) {
       console.error('Failed to create booking:', err);
@@ -282,10 +299,28 @@ function BookingsPage() {
                   <input
                     type="text"
                     name="customer"
+                    placeholder="Reference name for this channel"
                     className="form-input-premium"
                     value={formData.customer}
                     onChange={handleInputChange}
                   />
+                </div>
+
+                <div>
+                  <label className="form-label-premium">Associate Opportunity (Lead)</label>
+                  <select
+                    name="leadId"
+                    className="form-input-premium appearance-none"
+                    value={formData.leadId}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">No Association</option>
+                    {leads.map(lead => (
+                      <option key={lead.id} value={lead.id}>
+                        {lead.name} ({lead.company || 'Private'})
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

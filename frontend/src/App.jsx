@@ -140,7 +140,7 @@ function App() {
             </div>
             <div className="flex items-center gap-6">
               <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-                System v1.1.0-PRO
+                System v2.0.0-PRO
               </span>
               <div className="flex gap-4">
                 <a href="#" className="text-[10px] font-black text-slate-400 hover:text-cyan-500 transition-colors uppercase tracking-widest">Privacy Protocol</a>

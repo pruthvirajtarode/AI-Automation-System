@@ -11,15 +11,26 @@ function TasksPage() {
 
   const [filterBy, setFilterBy] = useState('all');
   const [showModal, setShowModal] = useState(false);
+  const [leads, setLeads] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     assigned: 'You',
     priority: 'medium',
     dueDate: '',
+    leadId: '',
   });
 
-  useEffect(() => { loadTasks(); }, []);
+  useEffect(() => { loadTasks(); loadLeads(); }, []);
+
+  const loadLeads = async () => {
+    try {
+      const data = await api.listLeads();
+      setLeads(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Failed to load leads:', err);
+    }
+  };
 
   const loadTasks = async () => {
     try {
@@ -51,17 +62,20 @@ function TasksPage() {
   const handleAddTask = async () => {
     if (!formData.title.trim() || !formData.dueDate) return;
     try {
+      // Ensure ISO format for backend
+      const isoDate = new Date(formData.dueDate).toISOString();
       await api.createTask({
         title: formData.title,
         description: formData.description,
         assigned_to: formData.assigned,
         priority: formData.priority,
-        due_date: formData.dueDate,
+        due_date: isoDate,
+        lead_id: formData.leadId || null,
         status: 'open',
       });
-      await loadTasks();
-      setFormData({ title: '', description: '', assigned: 'You', priority: 'medium', dueDate: '' });
       setShowModal(false);
+      setFormData({ title: '', description: '', assigned: 'You', priority: 'medium', dueDate: '', leadId: '' });
+      await loadTasks();
     } catch (err) {
       console.error('Failed to create task:', err);
     }
@@ -259,6 +273,22 @@ function TasksPage() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
+                </div>
+
+                <div>
+                  <label className="form-label-premium">Associate Opportunity (Lead)</label>
+                  <select
+                    className="form-input-premium appearance-none"
+                    value={formData.leadId}
+                    onChange={(e) => setFormData({ ...formData, leadId: e.target.value })}
+                  >
+                    <option value="">No Association</option>
+                    {leads.map(lead => (
+                      <option key={lead.id} value={lead.id}>
+                        {lead.name} ({lead.company || 'Private'})
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
 

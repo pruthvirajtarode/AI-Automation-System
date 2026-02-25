@@ -153,6 +153,19 @@ h6 {
   @apply bg-sky-50 text-sky-600 border border-sky-100;
 }
 
+.badge-premium-cyan {
+  @apply bg-cyan-50 text-cyan-600 border border-cyan-100;
+}
+
+.badge-premium-white {
+  @apply bg-white text-slate-600;
+}
+
+/* Buttons - additional */
+.btn-premium-primary {
+  @apply bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200;
+}
+
 /* Modals */
 .modal-overlay-premium {
   @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4;

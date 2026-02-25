@@ -10,7 +10,6 @@ from datetime import datetime
 from app.core.database import get_db
 from app.schemas import BookingCreate, BookingUpdate, BookingResponse
 from app.models import Booking, Lead, Customer
-from app.services.booking_service import get_booking_service
 import logging
 import uuid
 
@@ -125,18 +124,19 @@ async def update_booking(
 ):
     """Update booking details"""
     try:
-        booking_service = get_booking_service()
-        
+        booking = db.query(Booking).filter(Booking.id == booking_id).first()
+
+        if not booking:
+            raise HTTPException(status_code=404, detail="Booking not found")
+
         update_data = booking_update.dict(exclude_unset=True)
-        
-        result = await booking_service.update_booking(db, booking_id, **update_data)
-        
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-        
-        db_booking = db.query(Booking).filter(Booking.id == booking_id).first()
-        
-        return db_booking
+        for field, value in update_data.items():
+            setattr(booking, field, value)
+
+        db.commit()
+        db.refresh(booking)
+
+        return _booking_with_customer(booking, db)
     except HTTPException:
         raise
     except Exception as e:
@@ -149,16 +149,17 @@ async def cancel_booking(
     booking_id: str,
     db: Session = Depends(get_db)
 ):
-    """Cancel booking"""
+    """Cancel/delete booking"""
     try:
-        booking_service = get_booking_service()
-        
-        result = await booking_service.cancel_booking(db, booking_id)
-        
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-        
-        return result
+        booking = db.query(Booking).filter(Booking.id == booking_id).first()
+
+        if not booking:
+            raise HTTPException(status_code=404, detail="Booking not found")
+
+        db.delete(booking)
+        db.commit()
+
+        return {"success": True, "message": "Booking cancelled successfully"}
     except HTTPException:
         raise
     except Exception as e:

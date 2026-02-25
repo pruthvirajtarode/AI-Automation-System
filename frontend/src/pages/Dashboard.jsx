@@ -330,11 +330,7 @@ function Dashboard() {
               <p className="text-slate-400 text-[8px] font-medium">Team syncing & fulfillment</p>
             </div>
           </div>
-          <div className="mt-4 p-3 sm:p-4 bg-amber-50 rounded-xl border border-amber-100">
-            <p className="text-amber-700 text-[10px] sm:text-xs font-bold">
-              ⚡ <strong>Next steps:</strong> (1) Fill <code className="bg-amber-100 px-1 py-0.5 rounded text-[9px]">GOHIGHLEVEL_LOCATION_ID</code> + pipeline IDs in <code className="bg-amber-100 px-1 py-0.5 rounded text-[9px]">backend/.env</code> | (2) Point n8n HTTP Request node at <code className="bg-amber-100 px-1 py-0.5 rounded text-[9px]">POST /api/n8n/process</code>
-            </p>
-          </div>
+
         </div>
 
         {/* Recent Activity Table */}
