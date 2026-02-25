@@ -171,6 +171,29 @@ async def update_lead_in_crm(
         logger.error(f"Error updating lead in CRM: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.delete("/customers/{customer_id}")
+async def delete_customer(
+    customer_id: str,
+    db: Session = Depends(get_db)
+):
+    """Delete a customer"""
+    try:
+        customer = db.query(Customer).filter(Customer.id == customer_id).first()
+        
+        if not customer:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        db.delete(customer)
+        db.commit()
+        
+        return {"success": True, "message": "Customer deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting customer: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/sync/salesforce")
 async def sync_to_salesforce(
     lead_id: str,

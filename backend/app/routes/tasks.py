@@ -23,12 +23,19 @@ async def create_task(
 ):
     """Create new task"""
     try:
-        # Verify lead exists
-        lead = db.query(Lead).filter(Lead.id == task.lead_id).first()
-        if not lead:
-            raise HTTPException(status_code=404, detail="Lead not found")
+        task_data = task.dict()
         
-        db_task = Task(**task.dict())
+        # If lead_id provided, verify lead exists
+        if task_data.get("lead_id"):
+            lead = db.query(Lead).filter(Lead.id == task.lead_id).first()
+            if not lead:
+                raise HTTPException(status_code=404, detail="Lead not found")
+        
+        # Normalize status: convert hyphens to underscores for enum
+        if task_data.get("status"):
+            task_data["status"] = task_data["status"].replace("-", "_")
+        
+        db_task = Task(**task_data)
         db.add(db_task)
         db.commit()
         db.refresh(db_task)
@@ -103,6 +110,9 @@ async def update_task(
             raise HTTPException(status_code=404, detail="Task not found")
         
         update_data = task_update.dict(exclude_unset=True)
+        # Normalize status: convert hyphens to underscores
+        if "status" in update_data and update_data["status"]:
+            update_data["status"] = update_data["status"].replace("-", "_")
         for field, value in update_data.items():
             setattr(task, field, value)
         
@@ -193,3 +203,27 @@ async def update_task_status(
         logger.error(f"Error updating task status: {str(e)}")
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{task_id}")
+async def delete_task(
+    task_id: str,
+    db: Session = Depends(get_db)
+):
+    """Delete task from system"""
+    try:
+        task = db.query(Task).filter(Task.id == task_id).first()
+        
+        if not task:
+            raise HTTPException(status_code=404, detail="Task not found")
+        
+        db.delete(task)
+        db.commit()
+        
+        return {"success": True, "message": "Task deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting task: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+

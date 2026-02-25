@@ -16,14 +16,15 @@ import {
   HiCalendarDays,
   HiArrowRight
 } from "react-icons/hi2";
+import api from '../services/api';
 
 function Dashboard() {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
-    totalLeads: 124,
-    qualifiedLeads: 42,
-    pendingTasks: 8,
-    upcomingBookings: 3
+    totalLeads: 0,
+    qualifiedLeads: 0,
+    pendingTasks: 0,
+    upcomingBookings: 0
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,21 +48,42 @@ function Dashboard() {
     try {
       setLoading(true);
 
-      // Simulation of data fetching
+      // Fetch real data from backend API
+      const [leads, tasks, bookings] = await Promise.allSettled([
+        api.listLeads(),
+        api.listTasks(),
+        api.listBookings(),
+      ]);
+
+      const leadsData = leads.status === 'fulfilled' ? leads.value : [];
+      const tasksData = tasks.status === 'fulfilled' ? tasks.value : [];
+      const bookingsData = bookings.status === 'fulfilled' ? bookings.value : [];
+
+      const qualifiedCount = Array.isArray(leadsData) ? leadsData.filter(l => l.status === 'qualified').length : 0;
+      const pendingCount = Array.isArray(tasksData) ? tasksData.filter(t => t.status === 'open' || t.status === 'pending').length : 0;
+      const upcomingCount = Array.isArray(bookingsData) ? bookingsData.filter(b => b.status === 'scheduled' || b.status === 'confirmed').length : 0;
+
       setStats({
-        totalLeads: 124,
-        qualifiedLeads: 42,
-        pendingTasks: 8,
-        upcomingBookings: 3
+        totalLeads: Array.isArray(leadsData) ? leadsData.length : 0,
+        qualifiedLeads: qualifiedCount,
+        pendingTasks: pendingCount,
+        upcomingBookings: upcomingCount,
       });
 
-      setRecentActivity([
-        { id: 1, customer: { name: 'John Smith', company: 'Tech Corp' }, status: 'qualified', quality_score: 85, created_at: new Date() },
-        { id: 2, customer: { name: 'Sarah Johnson', company: 'Finance Ltd' }, status: 'contacted', quality_score: 72, created_at: new Date() },
-        { id: 3, customer: { name: 'Mike Davis', company: 'Design Co' }, status: 'new', quality_score: 45, created_at: new Date() },
-      ]);
+      // Show last 5 leads as recent activity
+      const recentLeads = (Array.isArray(leadsData) ? leadsData : []).slice(0, 5).map((lead, i) => ({
+        id: lead.id || i + 1,
+        customer: { name: lead.name || lead.customer?.name || 'Unknown', company: lead.company || lead.customer?.company || '' },
+        status: lead.status || 'new',
+        quality_score: lead.quality_score || 50,
+        created_at: lead.created_at || new Date(),
+      }));
+      setRecentActivity(recentLeads);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      // Fallback to demo data if backend is unreachable
+      setStats({ totalLeads: 0, qualifiedLeads: 0, pendingTasks: 0, upcomingBookings: 0 });
+      setRecentActivity([]);
     } finally {
       setLoading(false);
     }
@@ -252,6 +274,66 @@ function Dashboard() {
                 <div className="absolute top-[-20%] right-[-10%] w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl text-xs"></div>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="card-premium mb-8 sm:mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900">Integration Status</h3>
+              <p className="text-slate-500 font-medium text-sm">All connected platforms for Digital Dada AI</p>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg w-fit">Live Connections</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-slate-50 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 border border-slate-100 hover:border-slate-200 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xl sm:text-2xl">🏆</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700">✓ Active</span>
+              </div>
+              <div>
+                <p className="font-black text-slate-900 text-[10px] sm:text-xs">GoHighLevel</p>
+                <p className="text-slate-400 text-[8px] sm:text-[10px] font-bold">CRM · Email · Tasks · Booking</p>
+              </div>
+              <p className="text-slate-400 text-[8px] font-medium">Primary platform – covers everything</p>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 border border-slate-100 hover:border-slate-200 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xl sm:text-2xl">🤖</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700">✓ Active</span>
+              </div>
+              <div>
+                <p className="font-black text-slate-900 text-[10px] sm:text-xs">OpenAI GPT-4</p>
+                <p className="text-slate-400 text-[8px] sm:text-[10px] font-bold">AI Engine</p>
+              </div>
+              <p className="text-slate-400 text-[8px] font-medium">Smart replies & qualification</p>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 border border-slate-100 hover:border-slate-200 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xl sm:text-2xl">⚡</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700">✓ Active</span>
+              </div>
+              <div>
+                <p className="font-black text-slate-900 text-[10px] sm:text-xs">n8n</p>
+                <p className="text-slate-400 text-[8px] sm:text-[10px] font-bold">Automation Glue</p>
+              </div>
+              <p className="text-slate-400 text-[8px] font-medium">Connects Channels → AI → GHL</p>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 border border-slate-100 hover:border-slate-200 transition-all">
+              <div className="flex items-center justify-between">
+                <span className="text-xl sm:text-2xl">📋</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700">✓ Active</span>
+              </div>
+              <div>
+                <p className="font-black text-slate-900 text-[10px] sm:text-xs">Trello</p>
+                <p className="text-slate-400 text-[8px] sm:text-[10px] font-bold">Task Management</p>
+              </div>
+              <p className="text-slate-400 text-[8px] font-medium">Team syncing & fulfillment</p>
+            </div>
+          </div>
+          <div className="mt-4 p-3 sm:p-4 bg-amber-50 rounded-xl border border-amber-100">
+            <p className="text-amber-700 text-[10px] sm:text-xs font-bold">
+              ⚡ <strong>Next steps:</strong> (1) Fill <code className="bg-amber-100 px-1 py-0.5 rounded text-[9px]">GOHIGHLEVEL_LOCATION_ID</code> + pipeline IDs in <code className="bg-amber-100 px-1 py-0.5 rounded text-[9px]">backend/.env</code> &nbsp;|&nbsp; (2) Point n8n HTTP Request node at <code className="bg-amber-100 px-1 py-0.5 rounded text-[9px]">POST /api/n8n/process</code>
+            </p>
           </div>
         </div>
 

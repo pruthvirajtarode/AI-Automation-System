@@ -3,52 +3,89 @@
  * Premium task orchestration and lifecycle management
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 
 function TasksPage() {
-  const [tasks, setTasks] = useState([
-    { id: 1, title: 'Follow up with John Smith', assigned: 'You', status: 'pending', priority: 'high', dueDate: '2024-01-15' },
-    { id: 2, title: 'Send proposal to Tech Corp', assigned: 'Sarah', status: 'in-progress', priority: 'high', dueDate: '2024-01-12' },
-    { id: 3, title: 'Schedule demo call', assigned: 'Mike', status: 'completed', priority: 'medium', dueDate: '2024-01-10' },
-    { id: 4, title: 'Update CRM with new leads', assigned: 'You', status: 'pending', priority: 'low', dueDate: '2024-01-20' },
-    { id: 5, title: 'Prepare quarterly report', assigned: 'Emma', status: 'in-progress', priority: 'medium', dueDate: '2024-01-18' },
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   const [filterBy, setFilterBy] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    description: '',
     assigned: 'You',
     priority: 'medium',
     dueDate: '',
   });
 
+  useEffect(() => { loadTasks(); }, []);
+
+  const loadTasks = async () => {
+    try {
+      const data = await api.listTasks();
+      const mapped = (Array.isArray(data) ? data : []).map(t => ({
+        id: t.id,
+        title: t.title || '',
+        description: t.description || '',
+        assigned: t.assigned_to || 'You',
+        status: t.status === 'open' ? 'pending' : (t.status || 'pending'),
+        priority: t.priority || 'medium',
+        dueDate: t.due_date || '',
+      }));
+      setTasks(mapped);
+    } catch (err) {
+      console.error('Failed to load tasks:', err);
+    }
+  };
+
+  const [searchTerm, setSearchTerm] = useState('');
+
   const filteredTasks = tasks.filter((task) => {
-    if (filterBy === 'all') return true;
-    return task.status === filterBy;
+    const statusMatch = filterBy === 'all' || task.status === filterBy;
+    const searchMatch = task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return statusMatch && searchMatch;
   });
 
-  const handleAddTask = () => {
+  const handleAddTask = async () => {
     if (!formData.title.trim() || !formData.dueDate) return;
-
-    const newTask = {
-      id: Date.now(),
-      ...formData,
-      status: 'pending',
-    };
-
-    setTasks([newTask, ...tasks]);
-    setFormData({ title: '', assigned: 'You', priority: 'medium', dueDate: '' });
-    setShowModal(false);
+    try {
+      await api.createTask({
+        title: formData.title,
+        description: formData.description,
+        assigned_to: formData.assigned,
+        priority: formData.priority,
+        due_date: formData.dueDate,
+        status: 'open',
+      });
+      await loadTasks();
+      setFormData({ title: '', description: '', assigned: 'You', priority: 'medium', dueDate: '' });
+      setShowModal(false);
+    } catch (err) {
+      console.error('Failed to create task:', err);
+    }
   };
 
-  const handleStatusChange = (taskId, newStatus) => {
-    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      await api.updateTask(taskId, { status: newStatus });
+      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+    } catch (err) {
+      console.error('Failed to update task:', err);
+      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)));
+    }
   };
 
-  const handleDeleteTask = (taskId) => {
+  const handleDeleteTask = async (taskId) => {
     if (window.confirm('Delete this task definition?')) {
-      setTasks(tasks.filter((task) => task.id !== taskId));
+      try {
+        await api.deleteTask(taskId);
+        await loadTasks();
+      } catch (err) {
+        console.error('Failed to delete task:', err);
+      }
     }
   };
 
@@ -98,20 +135,33 @@ function TasksPage() {
           </div>
         </div>
 
-        {/* Filter Toolbar */}
-        <div className="flex flex-wrap gap-2 sm:gap-3 mb-8 sm:mb-12 bg-white/50 p-2 rounded-2xl border border-slate-200/50 w-full sm:w-fit">
-          {['all', 'pending', 'in-progress', 'completed'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilterBy(status)}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all ${filterBy === status
-                ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
-                : 'text-slate-500 hover:bg-white hover:text-slate-900'
-                }`}
-            >
-              {status.replace('-', ' ')}
-            </button>
-          ))}
+        {/* Filter Toolbar & Search */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-12">
+          <div className="flex flex-wrap gap-2 sm:gap-3 bg-white/50 p-2 rounded-2xl border border-slate-200/50 w-full lg:w-fit">
+            {['all', 'pending', 'in-progress', 'completed'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilterBy(status)}
+                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all ${filterBy === status
+                  ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                  : 'text-slate-500 hover:bg-white hover:text-slate-900'
+                  }`}
+              >
+                {status.replace('-', ' ')}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 relative group">
+            <input
+              type="text"
+              placeholder="Search initiatives by title or details..."
+              className="w-full bg-white/50 border-2 border-slate-100 rounded-2xl px-6 py-3.5 focus:bg-white focus:border-cyan-500 transition-all outline-none font-medium text-slate-600 pr-12"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-cyan-500 transition-colors">🔍</span>
+          </div>
         </div>
 
         {/* Task Cards */}
@@ -132,6 +182,11 @@ function TasksPage() {
                       {task.priority}
                     </span>
                   </div>
+                  {task.description && (
+                    <p className="text-slate-500 text-sm mb-4 line-clamp-2 font-medium">
+                      {task.description}
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-4 sm:gap-8">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 sm:w-8 sm:h-8 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] sm:text-xs font-black text-slate-400">
@@ -195,6 +250,17 @@ function TasksPage() {
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   />
                 </div>
+
+                <div>
+                  <label className="form-label-premium">Strategic Context</label>
+                  <textarea
+                    placeholder="Define the scope and desired outcome..."
+                    className="form-input-premium min-h-[120px] resize-none"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  />
+                </div>
+
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>

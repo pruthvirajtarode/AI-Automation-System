@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import api from '../services/api';
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -12,41 +13,24 @@ function LoginPage({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Default admin credentials (in production, verify against backend)
-  const ADMIN_CREDENTIALS = {
-    email: 'admin@techsales.com',
-    password: 'Admin@12345',
-    name: 'Admin User',
-    role: 'Administrator',
-  };
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // Validate credentials
-      if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-        // Successful login
-        const user = {
-          email: ADMIN_CREDENTIALS.email,
-          name: ADMIN_CREDENTIALS.name,
-          role: ADMIN_CREDENTIALS.role,
-        };
+    try {
+      const data = await api.post('/auth/login', { email, password });
 
-        // Store in localStorage for persistence
-        localStorage.setItem('authToken', 'demo-token-' + Date.now());
-        localStorage.setItem('user', JSON.stringify(user));
+      // Store in localStorage for persistence
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-        onLogin(user);
-        setLoading(false);
-      } else {
-        setError('Invalid email or password');
-        setLoading(false);
-      }
-    }, 1500);
+      onLogin(data.user);
+    } catch (err) {
+      setError(err?.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

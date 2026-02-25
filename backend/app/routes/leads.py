@@ -22,25 +22,80 @@ async def create_lead(
     lead: LeadCreate,
     db: Session = Depends(get_db)
 ):
-    """Create new lead"""
+    """Create new lead - optionally auto-creates customer from inline fields"""
     try:
-        # Verify customer exists
-        customer = db.query(Customer).filter(Customer.id == lead.customer_id).first()
-        if not customer:
-            raise HTTPException(status_code=404, detail="Customer not found")
-        
-        db_lead = Lead(**lead.dict())
+        customer_id = lead.customer_id
+
+        # If no customer_id but name/email provided, find or create customer
+        if not customer_id and (lead.name or lead.email):
+            existing = None
+            if lead.email:
+                existing = db.query(Customer).filter(Customer.email == lead.email).first()
+            if not existing and lead.phone:
+                existing = db.query(Customer).filter(Customer.phone == lead.phone).first()
+
+            if existing:
+                customer_id = existing.id
+            else:
+                new_customer = Customer(
+                    name=lead.name or "Unknown",
+                    email=lead.email or "",
+                    phone=lead.phone or "",
+                    company=lead.company or "",
+                )
+                db.add(new_customer)
+                db.flush()
+                customer_id = new_customer.id
+
+        if not customer_id:
+            raise HTTPException(status_code=400, detail="Either customer_id or customer fields (name, email) required")
+
+        lead_data = {
+            "customer_id": customer_id,
+            "status": lead.status or "new",
+            "quality_score": lead.quality_score or 0.0,
+            "requirements": lead.requirements,
+            "timeline": lead.timeline,
+            "budget": lead.budget,
+            "priority": lead.priority,
+            "assigned_to": lead.assigned_to,
+        }
+        db_lead = Lead(**lead_data)
         db.add(db_lead)
         db.commit()
         db.refresh(db_lead)
-        
-        return db_lead
+
+        # Attach customer info for response
+        customer = db.query(Customer).filter(Customer.id == customer_id).first()
+        return _lead_with_customer(db_lead, customer)
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Error creating lead: {str(e)}")
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _lead_with_customer(lead, customer=None):
+    """Build LeadResponse dict with customer info attached"""
+    return {
+        "id": lead.id,
+        "customer_id": lead.customer_id,
+        "status": lead.status.value if hasattr(lead.status, 'value') else lead.status,
+        "quality_score": lead.quality_score,
+        "requirements": lead.requirements,
+        "timeline": lead.timeline,
+        "budget": lead.budget,
+        "priority": lead.priority,
+        "assigned_to": lead.assigned_to,
+        "name": customer.name if customer else None,
+        "company": customer.company if customer else None,
+        "email": customer.email if customer else None,
+        "phone": customer.phone if customer else None,
+        "created_at": lead.created_at,
+        "updated_at": lead.updated_at,
+    }
+
 
 @router.get("/", response_model=List[LeadResponse])
 async def list_leads(
@@ -50,7 +105,7 @@ async def list_leads(
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db)
 ):
-    """List leads with optional filtering"""
+    """List leads with customer info"""
     try:
         query = db.query(Lead)
         
@@ -62,8 +117,12 @@ async def list_leads(
             query = query.filter(Lead.assigned_to == assigned_to)
         
         leads = query.order_by(Lead.created_at.desc()).limit(limit).all()
-        
-        return leads
+
+        result = []
+        for lead in leads:
+            customer = db.query(Customer).filter(Customer.id == lead.customer_id).first()
+            result.append(_lead_with_customer(lead, customer))
+        return result
     except Exception as e:
         logger.error(f"Error listing leads: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

@@ -44,9 +44,12 @@ function App() {
     setLoading(false);
   }, []);
 
+  const [showLogoutScreen, setShowLogoutScreen] = useState(false);
+
   const handleLogin = (userData) => {
     setUser(userData);
     setIsLoggedIn(true);
+    setShowLogoutScreen(false);
   };
 
   const handleLogout = () => {
@@ -55,6 +58,7 @@ function App() {
     setUser(null);
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    setShowLogoutScreen(true);
   };
 
   if (loading) {
@@ -68,13 +72,8 @@ function App() {
     );
   }
 
-  // If not logged in, show login page
-  if (!isLoggedIn) {
-    return <LoginPage onLogin={handleLogin} />;
-  }
-
   // If logged out, show logout screen
-  if (isLoggedIn === false && user === null) {
+  if (showLogoutScreen) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50 p-6">
         <div className="max-w-md w-full glass-panel rounded-[3rem] p-12 text-center premium-shadow">
@@ -88,13 +87,12 @@ function App() {
           </p>
           <button
             onClick={() => {
-              setIsLoggedIn(true);
-              setUser({ name: 'Admin User', email: 'admin@techsales.com', role: 'Administrator' });
+              setShowLogoutScreen(false);
             }}
             className="w-full btn-premium btn-premium-cyan group"
           >
             <span className="mr-3 group-hover:rotate-12 transition-transform">🔑</span>
-            Login Again
+            Back to Login
           </button>
 
           <div className="mt-12 pt-8 border-t border-slate-100/50">
@@ -109,6 +107,12 @@ function App() {
       </div>
     );
   }
+
+  // If not logged in, show login page
+  if (!isLoggedIn) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
 
   // Logged in - show dashboard
   return (
@@ -136,7 +140,7 @@ function App() {
             </div>
             <div className="flex items-center gap-6">
               <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-                System v1.0.4-PRO
+                System v1.1.0-PRO
               </span>
               <div className="flex gap-4">
                 <a href="#" className="text-[10px] font-black text-slate-400 hover:text-cyan-500 transition-colors uppercase tracking-widest">Privacy Protocol</a>

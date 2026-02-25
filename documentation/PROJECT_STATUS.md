@@ -51,8 +51,11 @@ Overview of completed components
   - Email (SendGrid)
   - Website Chat
   - Form submissions
-- [x] **NotificationService** (integrated in other services)
-- [x] **AuthService** (framework ready)
+- [x] **NotificationService** - High-priority lead alerts
+- [x] **AuthService** - JWT Authentication
+- [x] **TrelloService** - Automated board & card management
+- [x] **GHLService** - GoHighLevel CRM sync
+- [x] **n8nService** - Workflow automation glue
 
 ### API Routes (6 Route Modules)
 - [x] Messages API - Receive, list, send messages
@@ -61,6 +64,7 @@ Overview of completed components
 - [x] Bookings API - Schedule, manage appointments
 - [x] Tasks API - Create, route, track tasks
 - [x] Follow-ups API - Schedule, manage follow-ups
+- [x] n8n API - Automation webhook receiver
 
 ### Frontend (React)
 - [x] Project structure
@@ -167,7 +171,8 @@ AI-Automation-System/
 │   │   │   ├── crm.py             ✅
 │   │   │   ├── bookings.py        ✅
 │   │   │   ├── tasks.py           ✅
-│   │   │   └── follow_ups.py      ✅
+│   │   │   ├── follow_ups.py      ✅
+│   │   │   └── n8n.py             ✅
 │   │   ├── utils/
 │   │   │   ├── __init__.py        ✅
 │   │   │   └── logging.py         ✅

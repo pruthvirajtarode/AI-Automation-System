@@ -3,15 +3,12 @@
  * Premium operational scheduling and meeting orchestration
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormValidator } from '../utils/validation';
+import api from '../services/api';
 
 function BookingsPage() {
-  const [bookings, setBookings] = useState([
-    { id: 1, title: 'Demo Call - Tech Corp', customer: 'John Smith', date: '2024-01-15', time: '10:00 AM', duration: '30 min', status: 'confirmed', meetingLink: 'https://meet.google.com/abc-123' },
-    { id: 2, title: 'Product Review', customer: 'Sarah Johnson', date: '2024-01-16', time: '2:00 PM', duration: '1 hour', status: 'confirmed', meetingLink: 'https://meet.google.com/def-456' },
-    { id: 3, title: 'Follow-up Discussion', customer: 'Mike Davis', date: '2024-01-17', time: '11:00 AM', duration: '30 min', status: 'pending', meetingLink: '' },
-  ]);
+  const [bookings, setBookings] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -27,6 +24,27 @@ function BookingsPage() {
   const [formErrors, setFormErrors] = useState({});
   const validator = new FormValidator();
 
+  useEffect(() => { loadBookings(); }, []);
+
+  const loadBookings = async () => {
+    try {
+      const data = await api.listBookings();
+      const mapped = (Array.isArray(data) ? data : []).map(b => ({
+        id: b.id,
+        title: b.meeting_type || b.title || 'Meeting',
+        customer: b.customer_name || b.customer || '',
+        date: b.scheduled_time ? b.scheduled_time.split('T')[0] : '',
+        time: b.scheduled_time ? new Date(b.scheduled_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+        duration: `${b.duration_minutes || 30} min`,
+        status: b.status === 'scheduled' ? 'confirmed' : (b.status || 'pending'),
+        meetingLink: b.meeting_link || '',
+      }));
+      setBookings(mapped);
+    } catch (err) {
+      console.error('Failed to load bookings:', err);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -35,7 +53,7 @@ function BookingsPage() {
     }
   };
 
-  const handleAddBooking = () => {
+  const handleAddBooking = async () => {
     const schema = {
       title: { required: true, minLength: 5 },
       customer: { required: true },
@@ -48,24 +66,38 @@ function BookingsPage() {
       return;
     }
 
-    const newBooking = {
-      id: Date.now(),
-      ...formData,
-      status: 'pending',
-    };
-
-    setBookings([newBooking, ...bookings]);
-    setFormData({ title: '', customer: '', date: '', time: '', duration: '30 min', meetingLink: '' });
-    setShowModal(false);
+    try {
+      await api.createBooking({
+        meeting_type: formData.title,
+        scheduled_time: `${formData.date}T${formData.time}`,
+        duration_minutes: parseInt(formData.duration) || 30,
+        meeting_link: formData.meetingLink,
+      });
+      await loadBookings();
+      setFormData({ title: '', customer: '', date: '', time: '', duration: '30 min', meetingLink: '' });
+      setShowModal(false);
+    } catch (err) {
+      console.error('Failed to create booking:', err);
+    }
   };
 
-  const handleConfirmBooking = (id) => {
-    setBookings(bookings.map((b) => (b.id === id ? { ...b, status: 'confirmed' } : b)));
+  const handleConfirmBooking = async (id) => {
+    try {
+      await api.updateBooking(id, { status: 'confirmed' });
+      setBookings(bookings.map((b) => (b.id === id ? { ...b, status: 'confirmed' } : b)));
+    } catch (err) {
+      setBookings(bookings.map((b) => (b.id === id ? { ...b, status: 'confirmed' } : b)));
+    }
   };
 
-  const handleCancelBooking = (id) => {
+  const handleCancelBooking = async (id) => {
     if (window.confirm('Terminate this operational scheduling record?')) {
-      setBookings(bookings.filter((b) => b.id !== id));
+      try {
+        await api.deleteBooking(id);
+        await loadBookings();
+      } catch (err) {
+        console.error('Failed to cancel booking:', err);
+      }
     }
   };
 

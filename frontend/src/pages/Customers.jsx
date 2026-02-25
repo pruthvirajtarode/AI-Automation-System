@@ -3,15 +3,12 @@
  * Premium customer relationship management
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormValidator } from '../utils/validation';
+import api from '../services/api';
 
 function CustomersPage() {
-  const [customers, setCustomers] = useState([
-    { id: 1, name: 'Alex Thompson', email: 'alex@techcorp.com', company: 'Tech Corp', phone: '555-1234', status: 'active', tier: 'premium' },
-    { id: 2, name: 'Emma Wilson', email: 'emma@finance.com', company: 'Finance Ltd', phone: '555-5678', status: 'active', tier: 'standard' },
-    { id: 3, name: 'David Chen', email: 'david@startup.io', company: 'StartUp Inc', phone: '555-9101', status: 'inactive', tier: 'basic' },
-  ]);
+  const [customers, setCustomers] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -30,6 +27,26 @@ function CustomersPage() {
   });
 
   const validator = new FormValidator();
+
+  useEffect(() => { loadCustomers(); }, []);
+
+  const loadCustomers = async () => {
+    try {
+      const data = await api.listCustomers();
+      const mapped = (Array.isArray(data) ? data : []).map(c => ({
+        id: c.id,
+        name: c.name || '',
+        email: c.email || '',
+        company: c.company || '',
+        phone: c.phone || '',
+        status: c.status || 'active',
+        tier: c.tier || 'standard',
+      }));
+      setCustomers(mapped);
+    } catch (err) {
+      console.error('Failed to load customers:', err);
+    }
+  };
 
   const openModal = (customer = null) => {
     if (customer) {
@@ -58,7 +75,7 @@ function CustomersPage() {
     }
   };
 
-  const handleSaveCustomer = () => {
+  const handleSaveCustomer = async () => {
     const schema = {
       name: { required: true, minLength: 2 },
       email: { required: true, type: 'email' },
@@ -72,20 +89,30 @@ function CustomersPage() {
     }
 
     setLoading(true);
-    setTimeout(() => {
+    try {
       if (editingId) {
-        setCustomers(customers.map((c) => (c.id === editingId ? { ...formData, id: editingId } : c)));
+        await api.updateCustomer(editingId, formData);
       } else {
-        setCustomers([{ ...formData, id: Date.now() }, ...customers]);
+        await api.createCustomer(formData);
       }
+      await loadCustomers();
       setShowModal(false);
+    } catch (err) {
+      console.error('Failed to save customer:', err);
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
-  const handleDeleteCustomer = (id) => {
+  const handleDeleteCustomer = async (id) => {
     if (window.confirm('Terminate customer relationship records?')) {
-      setCustomers(customers.filter((c) => c.id !== id));
+      try {
+        await api.deleteCustomer(id);
+        await loadCustomers();
+      } catch (err) {
+        console.error('Failed to delete customer:', err);
+        setCustomers(customers.filter((c) => c.id !== id));
+      }
     }
   };
 

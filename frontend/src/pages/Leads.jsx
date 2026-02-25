@@ -6,14 +6,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FormValidator } from '../utils/validation';
+import api from '../services/api';
 
 function LeadsPage() {
   const location = useLocation();
-  const [leads, setLeads] = useState([
-    { id: 1, customer: { name: 'John Smith', company: 'Tech Corp' }, status: 'qualified', priority: 'high', quality_score: 85 },
-    { id: 2, customer: { name: 'Sarah Johnson', company: 'Finance Ltd' }, status: 'contacted', priority: 'medium', quality_score: 72 },
-    { id: 3, customer: { name: 'Mike Davis', company: 'Design Co' }, status: 'new', priority: 'low', quality_score: 45 },
-  ]);
+  const [leads, setLeads] = useState([]);
   const [filters, setFilters] = useState({ status: 'all', priority: 'all', search: '' });
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', company: '', phone: '' });
@@ -21,11 +18,28 @@ function LeadsPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    loadLeads();
     const params = new URLSearchParams(location.search);
     if (params.get('add') === 'true') {
       setShowModal(true);
     }
   }, [location]);
+
+  const loadLeads = async () => {
+    try {
+      const data = await api.listLeads();
+      const mapped = (Array.isArray(data) ? data : []).map(l => ({
+        id: l.id,
+        customer: { name: l.name || '', company: l.company || '' },
+        status: l.status || 'new',
+        priority: l.priority || 'medium',
+        quality_score: l.quality_score || 50,
+      }));
+      setLeads(mapped);
+    } catch (err) {
+      console.error('Failed to load leads:', err);
+    }
+  };
 
   const validator = new FormValidator();
 
@@ -37,7 +51,7 @@ function LeadsPage() {
     }
   };
 
-  const handleAddLead = () => {
+  const handleAddLead = async () => {
     const schema = {
       name: { required: true, minLength: 2 },
       email: { required: true, type: 'email' },
@@ -51,19 +65,16 @@ function LeadsPage() {
     }
 
     setLoading(true);
-    setTimeout(() => {
-      const newLead = {
-        id: leads.length + 1,
-        customer: { name: formData.name, company: formData.company },
-        status: 'new',
-        priority: 'medium',
-        quality_score: 50,
-      };
-      setLeads([newLead, ...leads]);
+    try {
+      await api.createLead(formData);
+      await loadLeads();
       setFormData({ name: '', email: '', company: '', phone: '' });
       setShowModal(false);
+    } catch (err) {
+      console.error('Failed to create lead:', err);
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   const filteredLeads = leads.filter((lead) => {

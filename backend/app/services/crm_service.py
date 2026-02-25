@@ -1,12 +1,14 @@
 """
 CRM Integration Service
-Handles CRM updates and customer data synchronization
+Handles CRM updates and customer data synchronization.
+Syncs to GoHighLevel for pipeline management.
 """
 
 import logging
 from typing import Dict, Optional
 from sqlalchemy.orm import Session
 from app.models import Lead, Customer, Message
+from app.services.ghl_service import get_ghl_service
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -147,27 +149,40 @@ class CRMService:
             logger.error(f"Error retrieving customer history: {str(e)}")
             return {"success": False, "error": str(e)}
     
-    async def sync_with_salesforce(
+    async def sync_with_ghl(
         self,
         lead_data: Dict
     ) -> Dict:
         """
-        Sync lead data with Salesforce CRM
-        
+        Sync lead data with GoHighLevel CRM (contacts + pipeline).
+
         Args:
             lead_data: Lead information to sync
-            
+
         Returns:
             Sync result
         """
-        # TODO: Implement Salesforce integration
-        # This would use salesforce-python library or REST API
-        logger.info(f"Syncing lead to Salesforce: {lead_data.get('id')}")
-        
-        return {
-            "success": True,
-            "message": "Salesforce sync queued"
-        }
+        ghl = get_ghl_service()
+        try:
+            result = await ghl.sync_lead(
+                name=lead_data.get("name", ""),
+                email=lead_data.get("email", ""),
+                phone=lead_data.get("phone", ""),
+                company=lead_data.get("company", ""),
+                source=lead_data.get("source", "AI Agent"),
+            )
+            if result:
+                logger.info(f"Lead synced to GHL: {result.get('contact_id')}")
+                return {"success": True, "ghl_contact_id": result.get("contact_id"), "opportunity": result.get("opportunity")}
+            return {"success": False, "error": "GHL sync returned empty"}
+        except Exception as e:
+            logger.error(f"Error syncing lead to GHL: {str(e)}")
+            return {"success": False, "error": str(e)}
+
+    # Keep legacy alias
+    async def sync_with_salesforce(self, lead_data: Dict) -> Dict:
+        """Legacy alias – routes to GoHighLevel sync."""
+        return await self.sync_with_ghl(lead_data)
     
     async def tag_lead(
         self,

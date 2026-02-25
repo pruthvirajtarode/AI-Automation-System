@@ -17,18 +17,18 @@ function SettingsPage() {
 
   // ... (previous state declarations stay the same)
   const [general, setGeneral] = useState({
-    companyName: 'Tech Sales Inc',
-    email: 'admin@techsales.com',
-    phone: '555-0100',
-    website: 'https://techsales.com',
-    timezone: 'UTC',
+    companyName: 'Digital Dada',
+    email: 'digitaldadateam@gmail.com',
+    phone: '',
+    website: '',
+    timezone: 'IST',
     language: 'English',
   });
 
   const [api, setApi] = useState({
-    apiKey: 'sk_live_51PzaE1I4rZ9...',
-    secretKey: 'wh_secret_82x1... ',
-    webhookUrl: 'https://api.techsales.com/webhooks',
+    apiKey: '••••••••••••••••',
+    secretKey: '••••••••••••••••',
+    webhookUrl: '',
     enableWebhooks: true,
   });
 
@@ -168,6 +168,7 @@ function SettingsPage() {
                 <div>
                   <label className="form-label-premium">Temporal Synchronization (Timezone)</label>
                   <select className="form-input-premium appearance-none" value={general.timezone} onChange={(e) => handleGeneralChange('timezone', e.target.value)}>
+                    <option value="IST">India Standard Time</option>
                     <option value="UTC">UTC (Standard)</option>
                     <option value="EST">Eastern Time</option>
                     <option value="PST">Pacific Time</option>

@@ -32,6 +32,11 @@ class APIService {
     return this.put(`/leads/${leadId}`, leadData);
   }
 
+  async deleteLead(leadId) {
+    return this.delete(`/leads/${leadId}`);
+  }
+
+
   async qualifyLead(leadId, message) {
     return this.post(`/leads/${leadId}/qualify`, { message_content: message });
   }
@@ -51,6 +56,10 @@ class APIService {
 
   async updateCustomer(customerId, customerData) {
     return this.put(`/crm/customers/${customerId}`, customerData);
+  }
+
+  async deleteCustomer(customerId) {
+    return this.delete(`/crm/customers/${customerId}`);
   }
 
   async getCustomerHistory(customerId, limit = 50) {
@@ -73,6 +82,11 @@ class APIService {
   async updateBooking(bookingId, bookingData) {
     return this.put(`/bookings/${bookingId}`, bookingData);
   }
+
+  async deleteBooking(bookingId) {
+    return this.delete(`/bookings/${bookingId}`);
+  }
+
 
   async checkAvailability(dateTime, durationMinutes = 30) {
     return this.get('/bookings/availability/check', {
@@ -97,6 +111,11 @@ class APIService {
   async updateTask(taskId, taskData) {
     return this.put(`/tasks/${taskId}`, taskData);
   }
+
+  async deleteTask(taskId) {
+    return this.delete(`/tasks/${taskId}`);
+  }
+
 
   async routeTask(leadId, message, title) {
     return this.post(`/tasks/${leadId}/route`, { message_content: message, title });

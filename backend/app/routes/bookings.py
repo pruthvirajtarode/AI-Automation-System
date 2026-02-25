@@ -9,13 +9,37 @@ from typing import List
 from datetime import datetime
 from app.core.database import get_db
 from app.schemas import BookingCreate, BookingUpdate, BookingResponse
-from app.models import Booking, Lead
+from app.models import Booking, Lead, Customer
 from app.services.booking_service import get_booking_service
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+def _booking_with_customer(booking, db):
+    """Build booking response with customer_name"""
+    customer_name = None
+    if booking.customer_id:
+        customer = db.query(Customer).filter(Customer.id == booking.customer_id).first()
+        if customer:
+            customer_name = customer.name
+    return {
+        "id": booking.id,
+        "lead_id": booking.lead_id,
+        "customer_id": booking.customer_id,
+        "customer_name": customer_name,
+        "scheduled_time": booking.scheduled_time,
+        "meeting_type": booking.meeting_type,
+        "duration_minutes": booking.duration_minutes,
+        "status": booking.status,
+        "meeting_link": booking.meeting_link,
+        "notes": booking.notes if hasattr(booking, 'notes') else None,
+        "created_at": booking.created_at,
+    }
+
 
 @router.post("/", response_model=BookingResponse)
 async def create_booking(
@@ -24,24 +48,23 @@ async def create_booking(
 ):
     """Create appointment booking"""
     try:
-        booking_service = get_booking_service()
-        
-        result = await booking_service.create_booking(
-            db,
-            booking.lead_id,
-            booking.customer_id,
-            booking.scheduled_time,
-            booking.meeting_type,
-            booking.duration_minutes
+        # Direct DB creation for flexibility (lead_id/customer_id are optional)
+        db_booking = Booking(
+            id=str(uuid.uuid4()),
+            lead_id=booking.lead_id,
+            customer_id=booking.customer_id,
+            scheduled_time=booking.scheduled_time,
+            meeting_type=booking.meeting_type or "consultation",
+            duration_minutes=booking.duration_minutes or 30,
+            meeting_link=booking.meeting_link,
+            notes=booking.notes,
+            status="scheduled",
         )
-        
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-        
-        # Fetch the created booking
-        db_booking = db.query(Booking).filter(Booking.id == result["booking_id"]).first()
-        
-        return db_booking
+        db.add(db_booking)
+        db.commit()
+        db.refresh(db_booking)
+
+        return _booking_with_customer(db_booking, db)
     except HTTPException:
         raise
     except Exception as e:
@@ -57,7 +80,7 @@ async def list_bookings(
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db)
 ):
-    """List bookings with optional filtering"""
+    """List bookings with customer names"""
     try:
         query = db.query(Booking)
         
@@ -69,8 +92,8 @@ async def list_bookings(
             query = query.filter(Booking.status == status)
         
         bookings = query.order_by(Booking.scheduled_time).limit(limit).all()
-        
-        return bookings
+
+        return [_booking_with_customer(b, db) for b in bookings]
     except Exception as e:
         logger.error(f"Error listing bookings: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

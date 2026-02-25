@@ -14,6 +14,8 @@ class CustomerBase(BaseModel):
     company: Optional[str] = None
     business_type: Optional[str] = None
     location: Optional[str] = None
+    status: Optional[str] = "active"
+    tier: Optional[str] = "standard"
 
 class CustomerCreate(CustomerBase):
     pass
@@ -23,6 +25,8 @@ class CustomerUpdate(BaseModel):
     company: Optional[str] = None
     business_type: Optional[str] = None
     location: Optional[str] = None
+    status: Optional[str] = None
+    tier: Optional[str] = None
 
 class CustomerResponse(CustomerBase):
     id: str
@@ -41,7 +45,14 @@ class LeadBase(BaseModel):
     budget: Optional[str] = None
 
 class LeadCreate(LeadBase):
-    customer_id: str
+    customer_id: Optional[str] = None
+    # Allow creating lead with inline customer data
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    priority: Optional[str] = None
+    assigned_to: Optional[str] = None
 
 class LeadUpdate(BaseModel):
     status: Optional[str] = None
@@ -55,8 +66,12 @@ class LeadUpdate(BaseModel):
 class LeadResponse(LeadBase):
     id: str
     customer_id: str
-    priority: Optional[str]
-    assigned_to: Optional[str]
+    priority: Optional[str] = None
+    assigned_to: Optional[str] = None
+    name: Optional[str] = None
+    company: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     
@@ -87,10 +102,14 @@ class MessageResponse(MessageBase):
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
-    task_type: str
+    task_type: Optional[str] = "general"
 
 class TaskCreate(TaskBase):
-    lead_id: str
+    lead_id: Optional[str] = None
+    assigned_to: Optional[str] = None
+    priority: Optional[str] = "medium"
+    due_date: Optional[datetime] = None
+    status: Optional[str] = "open"
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
@@ -98,10 +117,11 @@ class TaskUpdate(BaseModel):
     status: Optional[str] = None
     assigned_to: Optional[str] = None
     priority: Optional[str] = None
+    due_date: Optional[datetime] = None
 
 class TaskResponse(TaskBase):
     id: str
-    lead_id: str
+    lead_id: Optional[str] = None
     status: str
     assigned_to: Optional[str]
     priority: Optional[str]
@@ -114,26 +134,32 @@ class TaskResponse(TaskBase):
 
 # Booking Schemas
 class BookingCreate(BaseModel):
-    lead_id: str
-    customer_id: str
+    lead_id: Optional[str] = None
+    customer_id: Optional[str] = None
     scheduled_time: datetime
-    meeting_type: str
+    meeting_type: Optional[str] = "consultation"
     duration_minutes: Optional[int] = 30
+    meeting_link: Optional[str] = None
     notes: Optional[str] = None
+    customer_name: Optional[str] = None
 
 class BookingUpdate(BaseModel):
     scheduled_time: Optional[datetime] = None
     status: Optional[str] = None
     notes: Optional[str] = None
+    meeting_link: Optional[str] = None
 
 class BookingResponse(BaseModel):
     id: str
-    lead_id: str
-    customer_id: str
+    lead_id: Optional[str] = None
+    customer_id: Optional[str] = None
+    customer_name: Optional[str] = None
     scheduled_time: datetime
-    meeting_type: str
-    status: str
+    meeting_type: Optional[str] = None
+    duration_minutes: Optional[int] = 30
+    status: Optional[str] = None
     meeting_link: Optional[str] = None
+    notes: Optional[str] = None
     created_at: datetime
     
     class Config:

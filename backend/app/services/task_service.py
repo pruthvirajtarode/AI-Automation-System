@@ -1,6 +1,7 @@
 """
 Task Routing Service
-Routes tasks to appropriate teams based on content
+Routes tasks to appropriate teams based on content.
+Optionally syncs each task to a Trello board.
 """
 
 import logging
@@ -8,6 +9,7 @@ from typing import Dict, List
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from app.models import Task, Lead
+from app.services.trello_service import get_trello_service
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +81,15 @@ class TaskRoutingService:
             # Send notification to team
             await self._notify_team(assigned_team, task)
             
+            # Sync task to Trello board (non-blocking best-effort)
+            trello = get_trello_service()
+            trello_card = await trello.sync_task_to_trello(
+                task_title=task.title,
+                task_description=message_content,
+                target_list_name="To Do",
+                due_date=task.due_date.isoformat() if task.due_date else None,
+            )
+            
             logger.info(f"Task routed to {assigned_team}: {task.id}")
             
             return {
@@ -86,7 +97,8 @@ class TaskRoutingService:
                 "task_id": task.id,
                 "routed_to": assigned_team,
                 "task_type": task_type,
-                "priority": priority
+                "priority": priority,
+                "trello_card_id": trello_card.get("id") if trello_card else None
             }
         except Exception as e:
             logger.error(f"Error routing task: {str(e)}")

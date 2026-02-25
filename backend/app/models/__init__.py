@@ -45,6 +45,8 @@ class Customer(Base):
     company = Column(String(255))
     business_type = Column(String(100))
     location = Column(String(255))
+    status = Column(String(20), default="active")
+    tier = Column(String(20), default="standard")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -94,7 +96,7 @@ class Task(Base):
     __tablename__ = "tasks"
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    lead_id = Column(String, ForeignKey("leads.id"), nullable=False)
+    lead_id = Column(String, ForeignKey("leads.id"), nullable=True)
     title = Column(String(255), nullable=False)
     description = Column(Text)
     status = Column(Enum(TaskStatus), default=TaskStatus.OPEN, index=True)
@@ -113,8 +115,8 @@ class Booking(Base):
     __tablename__ = "bookings"
     
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    lead_id = Column(String, ForeignKey("leads.id"), nullable=False)
-    customer_id = Column(String, ForeignKey("customers.id"), nullable=False)
+    lead_id = Column(String, ForeignKey("leads.id"), nullable=True)
+    customer_id = Column(String, ForeignKey("customers.id"), nullable=True)
     scheduled_time = Column(DateTime, nullable=False)
     duration_minutes = Column(Integer, default=30)
     meeting_type = Column(String(100))  # call, demo, consultation

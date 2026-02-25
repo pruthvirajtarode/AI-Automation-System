@@ -30,16 +30,26 @@ class Settings(BaseSettings):
     SENDGRID_API_KEY: str = ""
     STRIPE_API_KEY: str = ""
     
-    # CRM Configuration
-    SALESFORCE_CLIENT_ID: str = ""
-    SALESFORCE_CLIENT_SECRET: str = ""
-    SALESFORCE_INSTANCE_URL: str = ""
+    # GoHighLevel CRM Configuration
+    GOHIGHLEVEL_API_KEY: str = ""
+    GOHIGHLEVEL_LOCATION_ID: str = ""
+    GOHIGHLEVEL_BASE_URL: str = "https://rest.gohighlevel.com/v1"
+    GOHIGHLEVEL_CALENDAR_ID: str = ""
+    GOHIGHLEVEL_PIPELINE_ID: str = ""
+    GOHIGHLEVEL_STAGE_ID_NEW: str = ""
+    GOHIGHLEVEL_STAGE_ID_BOOKED: str = ""
     
     # Email Configuration
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+    
+    # Zoho Mail Configuration
+    ZOHO_MAIL_API_KEY: str = ""
+    
+    # Airtable Configuration
+    AIRTABLE_TOKEN: str = ""
     
     # Calendar/Booking Configuration
     GOOGLE_CALENDAR_API_KEY: str = ""
@@ -52,17 +62,41 @@ class Settings(BaseSettings):
     # AI Configuration
     AI_SMART_MODEL: str = "gpt-4"
     AI_CHEAP_MODEL: str = "gpt-3.5-turbo"
-    AI_MODEL: str = "gpt-4"  # Default/Legacy
+    AI_MODEL: str = "gpt-4"
     AI_TEMPERATURE: float = 0.7
     AI_MAX_TOKENS: int = 2000
     
+    # Business Identity
+    BUSINESS_NAME: str = "Digital Dada AI"
+    BUSINESS_TAGLINE: str = "Your AI Operations Agent"
+    BUSINESS_SERVICES: str = ""
+    BUSINESS_HOURS: str = "Monday-Friday 9 AM-6 PM EST"
+    BOOKING_URL: str = ""
+    AI_AGENT_NAME: str = "Digital Dada AI Operations Agent"
+    AI_TONE: str = "professional"
+    
+    # Trello Integration
+    TRELLO_API_KEY: str = ""
+    TRELLO_API_TOKEN: str = ""
+    TRELLO_BOARD_ID: str = ""
+    
+    # n8n Workflow Automation
+    N8N_BASE_URL: str = ""
+    N8N_WEBHOOK_SECRET: str = ""
+    N8N_INTAKE_WEBHOOK_URL: str = ""
+    
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080"]
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080", "*"]
     
     # Application Settings
     APP_NAME: str = "Digital Dada AI Operations Agent"
-    APP_VERSION: str = "1.0.0"
+    APP_VERSION: str = "2.0.0"
     SECRET_KEY: str = "your-secret-key-change-this-in-production"
+    
+    # Admin Auth
+    ADMIN_EMAIL: str = "admin@techsales.com"
+    ADMIN_PASSWORD: str = "Admin@12345"
+
     
     # AWS Configuration
     AWS_ACCESS_KEY_ID: str = ""
